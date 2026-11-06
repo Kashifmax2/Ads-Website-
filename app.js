@@ -15,8 +15,9 @@
     leaderboard: "728×90 / responsive",
     billboard: "300×250 / 336×280",
     native: "responsive native",
-    halfpage: "300×600",
     rectangle: "300×250",
+    skyscraper: "160×600",
+    "sky-short": "160×300",
     anchor: "anchor / sticky",
     vignette: "interstitial",
     script: "script only"
@@ -52,10 +53,10 @@
   }
 
   function runScripts(root, done) {
-    // innerHTML से आए <script> खुद नहीं चलते — इन्हें दोबारा बनाना पड़ता है।
-    // बाहरी स्क्रिप्ट के load होने का इंतज़ार करते हैं, ताकि उसके बाद वाला
-    // inline कोड (जैसे AdSense का push) सही क्रम में चले।
+    // Scripts inserted with innerHTML do not execute, so rebuild them.
+    // Wait for each external script to load before running the next one.
     var scripts = Array.prototype.slice.call(root.querySelectorAll("script"));
+
     if (!scripts.length) {
       if (done) done();
       return;
@@ -101,7 +102,7 @@
         };
         fresh.addEventListener("load", finish);
         fresh.addEventListener("error", finish);
-        setTimeout(finish, 8000); // स्क्रिप्ट ब्लॉक हो जाए तो आगे बढ़ें
+        setTimeout(finish, 8000);
         root.appendChild(fresh);
       } else {
         root.appendChild(fresh);
@@ -119,7 +120,7 @@
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch (e) {
-        /* AdSense script अभी लोड नहीं हुआ — कोई बात नहीं */
+        /* The AdSense library has not loaded yet. */
       }
     });
   }
@@ -135,7 +136,7 @@
     var key = slot.getAttribute("data-slot") || "";
     var isHiddenSlot = slot.classList.contains("ad-slot-hidden");
 
-    // अगर index.html में सीधे कोड पेस्ट किया है तो उसे छेड़ेंगे नहीं।
+    // Code pasted directly in HTML: leave it alone.
     if (slot.childElementCount > 0 || slot.textContent.trim() !== "") return;
 
     var code = (codes[key] || "").trim();
@@ -154,7 +155,6 @@
     slot.classList.add("ad-filled");
 
     runScripts(slot, function () {
-      // अगर snippet में push({}) पहले से है तो दोबारा push नहीं करेंगे।
       if (!hasPush) pushAdSense(slot);
 
       slot.dispatchEvent(new CustomEvent("ad:filled", { bubbles: true, detail: { slot: key } }));
@@ -163,7 +163,7 @@
   }
 
   /* ---------------------------------------------------------
-     Lazy loading
+     Lazy loading (optional)
      --------------------------------------------------------- */
 
   var observer = null;
@@ -184,9 +184,7 @@
     Array.prototype.forEach.call(slots, function (slot) {
       slot.setAttribute("data-ad-watched", "1");
 
-      var isHidden = slot.classList.contains("ad-slot-hidden");
-
-      if (!observer || isHidden) {
+      if (!observer || slot.classList.contains("ad-slot-hidden")) {
         mount(slot);
         return;
       }
@@ -201,7 +199,7 @@
   }
 
   /* ---------------------------------------------------------
-     Anchor ad (नीचे चिपकने वाला)
+     Sticky anchor ad
      --------------------------------------------------------- */
 
   var anchorWrap = document.getElementById("anchor-ad");
@@ -217,7 +215,6 @@
     var slot = anchorWrap.querySelector(".ad-slot");
     if (!slot) return;
 
-    // कोड है या placeholder दिख रहा है — दोनों में दिखाएँ ताकि जांच हो सके।
     anchorWrap.hidden = false;
     mount(slot);
   }
@@ -238,8 +235,7 @@
 
   function onScroll() {
     if (!toTop) return;
-    var y = window.scrollY || window.pageYOffset;
-    toTop.classList.toggle("show", y > 500);
+    toTop.classList.toggle("show", (window.scrollY || 0) > 400);
   }
 
   if (toTop) {
@@ -248,83 +244,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
     onScroll();
-  }
-
-  /* ---------------------------------------------------------
-     Load more posts (+ 1 ad slot each time)
-     --------------------------------------------------------- */
-
-  var extraPosts = [
-    {
-      cat: "Tip",
-      title: "Battery draining fast? Change these 3 settings first",
-      text: "Location, background refresh and screen brightness together use the most battery."
-    },
-    {
-      cat: "Money",
-      title: "Online shopping refund not arrived? Do this",
-      text: "Save the order ID, bank statement and support chat screenshot while you follow up."
-    },
-    {
-      cat: "How-to",
-      title: "Turn an old phone into a home CCTV camera",
-      text: "One free app, a bit of space and a charger — that is all you need."
-    }
-  ];
-
-  var feed = document.getElementById("more-feed");
-  var loadBtn = document.getElementById("load-more");
-  var added = 0;
-  var MAX_POSTS = extraPosts.length;
-
-  function makeMiniPost(post) {
-    var article = document.createElement("article");
-    article.className = "mini-post";
-
-    var cat = document.createElement("p");
-    cat.className = "kicker";
-    cat.textContent = post.cat;
-
-    var title = document.createElement("h3");
-    title.textContent = post.title;
-
-    var text = document.createElement("p");
-    text.textContent = post.text;
-
-    article.appendChild(cat);
-    article.appendChild(title);
-    article.appendChild(text);
-    return article;
-  }
-
-  function makeAdSlot(index) {
-    var slot = document.createElement("aside");
-    slot.className = "ad-slot";
-    slot.setAttribute("data-slot", "deep-" + index);
-    slot.setAttribute("data-size", "native");
-    slot.setAttribute("aria-label", "Advertisement");
-    return slot;
-  }
-
-  if (feed && loadBtn) {
-    loadBtn.addEventListener("click", function () {
-      if (added >= MAX_POSTS) return;
-
-      var post = extraPosts[added];
-      added += 1;
-
-      feed.appendChild(makeMiniPost(post));
-
-      var slot = makeAdSlot(added);
-      feed.appendChild(slot);
-      registerSlots(feed);
-      mount(slot); // यहाँ तुरंत mount, क्योंकि यूज़र खुद इस जगह तक आया है।
-
-      if (added >= MAX_POSTS) {
-        loadBtn.textContent = "No more posts";
-        loadBtn.disabled = true;
-      }
-    });
   }
 
   /* ---------------------------------------------------------
@@ -344,4 +263,10 @@
   } else {
     boot();
   }
+
+  // Useful if you add slots dynamically later.
+  window.TechSarthiAds = {
+    mount: function (scope) { registerSlots(scope || document); },
+    mountSlot: mount
+  };
 })();

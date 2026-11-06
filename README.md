@@ -1,18 +1,18 @@
-# TechSarthi — Ads Starter Page
+# TechSarthi — Ad-Only Page
 
-A simple, responsive English content page with **12 + 3 ad slots** already wired up.
-Every slot is empty right now, so the page shows dashed placeholders — you can verify
-the layout before adding any ad code.
+A page built only for ads: **top banner, left rail, center stack, right rail, bottom banner,
+sticky anchor, plus popunder / vignette / social-bar script slots** — 21 slots in total.
+Every slot is empty right now, so dashed placeholders show where each ad will appear.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `index.html` | The full page (content + ad slots) |
-| `styles.css` | Design and responsive layout |
+| `index.html` | Ad layout with all slots |
+| `styles.css` | Responsive ad-wall design |
 | `ads.js` | **Paste all ad codes here** |
-| `app.js` | Ad loader, lazy load, load-more, anchor, back-to-top |
-| `privacy.html` | Privacy policy (needed for AdSense) |
+| `app.js` | Ad loader, anchor, back-to-top |
+| `privacy.html` | Privacy policy |
 
 ## Preview locally
 
@@ -22,10 +22,9 @@ Double-click `index.html`, or run:
 npx serve .
 ```
 
-## How to add ad codes
+## Add ad codes
 
-Open `ads.js` and find the `window.AD_CODES` object. Paste your snippet next to the
-matching slot, for example:
+Open `ads.js`, find the slot in `window.AD_CODES`, paste the snippet inside the backticks:
 
 ```js
 "top-banner": `
@@ -40,58 +39,52 @@ matching slot, for example:
 ```
 
 - One network per slot.
-- For AdSense, use the full snippet (ins + script).
+- AdSense: use the full snippet (ins + script).
 - Monetag / Adsterra `<script>` tags work the same way.
-- When you are done, set `ADS_CONFIG.showPlaceholders` to `false`.
-- You can also paste a code directly inside the matching `<aside class="ad-slot">`
-  in `index.html`; the loader will leave it untouched.
+- Popunder / vignette / social bar go in the hidden slots (`pop`, `vignette`, `social-bar`).
+- After adding the codes, set `ADS_CONFIG.showPlaceholders` to `false`.
+- You can also paste code directly inside the matching `<div class="ad-slot">` in `index.html`.
 
 ### Slot map
 
 | Slot key | Position | Size |
 |---|---|---|
-| `top-banner` | Just below the hero | 728×90 / responsive |
-| `in-article-1` | Inside article 1 | 300×250 / 336×280 |
-| `feed-1` | After article 2 | native |
-| `feed-2` | Inside article 3 | native |
-| `in-article-2` | Inside article 4 | 300×250 |
-| `native-1` | Before "More to read" | native |
-| `sidebar-sticky` | Sticky in the sidebar | 300×600 |
-| `sidebar-2` | Lower sidebar | 300×250 |
-| `bottom-banner` | End of the page | 728×90 |
+| `top-banner` | Top of the page | 728×90 / responsive |
+| `left-1` | Left rail, top | 160×600 |
+| `left-2` | Left rail, middle | 160×300 |
+| `left-3` | Left rail, bottom | 160×600 |
+| `center-1` | Center, first | 300×250 / 336×280 |
+| `center-2` | Center | 300×250 |
+| `center-3` | Center | 300×250 |
+| `center-4` | Center | native |
+| `center-5` | Center | 300×250 / 336×280 |
+| `center-6` | Center | 300×250 |
+| `center-7` | Center | 300×250 |
+| `center-8` | Center | native |
+| `right-1` | Right rail, top | 160×600 |
+| `right-2` | Right rail, middle | 160×300 |
+| `right-3` | Right rail, bottom | 160×600 |
+| `bottom-banner` | Bottom of the page | 728×90 |
 | `anchor` | Sticky at the bottom of the screen | anchor |
 | `vignette` | Interstitial / overlay | network builds it |
-| `global-scripts` | Social bar, popunder, script-only ads | invisible |
-| `deep-1..3` | Added by "Show more posts" | native |
+| `pop` | Popunder / pop ads | script only |
+| `social-bar` | Social bar | script only |
+| `global-scripts` | Any other script-only network | script only |
 
 ## Deploy to GitHub + Vercel
 
 ```bash
-git init
 git add .
-git commit -m "ads starter page"
-git branch -M main
-git remote add origin https://github.com/Kashifmax2/Ads-Website-.git
-git push -u origin main
+git commit -m "ad-only page"
+git push
 ```
 
-Then open [vercel.com](https://vercel.com) → **Add New Project** → import the GitHub repo →
-Framework: **Other**, leave build command and output directory empty → **Deploy**.
-It is a static site, so no build settings are required.
+Then Vercel → **Add New Project** → import `Ads-Website-` → Framework: **Other** →
+leave build command and output directory empty → **Deploy**.
 
-## Important (protect your accounts)
+## Notes
 
-1. **Do not make "any click opens an ad".** That is clickjacking and gets AdSense and most
-   other networks to ban your account. That is why it is not included.
-2. Do not put too many AdSense units on one page. Start with 3-5 AdSense units and use
-   other networks for the rest. Ads must not outnumber the content.
-3. Enable anchor/sticky and vignette only if the network's policy allows it.
-4. Replace the email in `privacy.html` with your real one, and add About/Contact pages
-   before applying to AdSense.
-5. After AdSense approval, add an `ads.txt` file to the site root:
-   `google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0`
-
-## Next step
-
-After Vercel is live, send me all your ad codes. I will place each one correctly
-(AdSense, Monetag, Adsterra, PropellerAds, etc.) and configure the formats.
+- An ad-only page without content is **not eligible for AdSense** (their policy requires
+  content), but networks like Monetag, Adsterra and PropellerAds usually accept it.
+- Keep one network per slot so you can tell which one earns.
+- `index.html` includes `noindex, nofollow` — remove that tag if you want search traffic.
