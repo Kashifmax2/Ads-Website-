@@ -1,80 +1,265 @@
 /* ===========================================================
-   TechSarthi — Ad codes config (ad-only page)
+   TechSarthi — Adsterra / Profitableratecpm ad codes
    -----------------------------------------------------------
-   Paste each ad code next to its slot below.
-   Empty slots show a dashed placeholder while testing.
-
-   Rules:
-   1. One network per slot.
-   2. For AdSense, paste the full snippet (ins + script).
-   3. Keep every code inside backticks ` `.
-   4. Once all codes are in, set showPlaceholders to false.
+   Every visible slot is filled below.
+   Hidden slots: popunder, social bar, native, vignette.
+   Smartlink is placed directly in index.html.
    =========================================================== */
 
 window.ADS_CONFIG = {
-  showPlaceholders: true, // set to false after adding your codes
-  lazyLoad: false,        // true = load each ad as it nears the viewport
-  anchorEnabled: true     // sticky ad at the bottom of the screen
+  showPlaceholders: false,
+  lazyLoad: false,
+  anchorEnabled: true
 };
 
 window.AD_CODES = {
 
-  /* ---------- TOP BANNER ---------- */
-  "top-banner": ``,
+  /* =========================================================
+     728x90 banners
+     ========================================================= */
 
-  /* ---------- LEFT RAIL ---------- */
-  "left-1": ``,   // 160x600
-  "left-2": ``,   // 160x300
-  "left-3": ``,   // 160x600
+  "top-banner": `
+    <script>
+      atOptions = {
+        'key' : '108b7b9c4b4ba4a48b1cc80c01c8846c',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/108b7b9c4b4ba4a48b1cc80c01c8846c/invoke.js"></script>
+  `,
 
-  /* ---------- CENTER COLUMN ---------- */
-  "center-1": ``, // 300x250 / 336x280
-  "center-2": ``, // 300x250
-  "center-3": ``, // 300x250
-  "center-4": ``, // native
-  "center-5": ``, // 300x250 / 336x280
-  "center-6": ``, // 300x250
-  "center-7": ``, // 300x250
-  "center-8": ``, // native
+  "bottom-banner": `
+    <script>
+      atOptions = {
+        'key' : '108b7b9c4b4ba4a48b1cc80c01c8846c',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/108b7b9c4b4ba4a48b1cc80c01c8846c/invoke.js"></script>
+  `,
 
-  /* ---------- RIGHT RAIL ---------- */
-  "right-1": ``,  // 160x600
-  "right-2": ``,  // 160x300
-  "right-3": ``,  // 160x600
-
-  /* ---------- BOTTOM BANNER ---------- */
-  "bottom-banner": ``,
-
-  /* ---------- STICKY BOTTOM ANCHOR ---------- */
-  "anchor": ``,
-
-  /* ---------- HIDDEN / SCRIPT-ONLY SLOTS ---------- */
-  "vignette": ``,      // interstitial / overlay (the code builds its own overlay)
-  "pop": ``,           // popunder / pop ads
-  "social-bar": ``,    // social bar
-  "global-scripts": `` // any other script-only network
+  "anchor": `
+    <script>
+      atOptions = {
+        'key' : '108b7b9c4b4ba4a48b1cc80c01c8846c',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/108b7b9c4b4ba4a48b1cc80c01c8846c/invoke.js"></script>
+  `,
 
   /* =========================================================
-     Example — AdSense (use your own client ID):
-
-     "top-banner": `
-       <ins class="adsbygoogle"
-            style="display:block"
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot="1234567890"
-            data-ad-format="auto"
-            data-full-width-responsive="true"></ins>
-       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-     `,
-
-     Example — Monetag / Adsterra banner:
-     "left-1": `
-       <script src="https://your-network-tag.js"></script>
-     `,
-
-     Example — popunder (script-only):
-     "pop": `
-       <script src="https://your-popunder-tag.js"></script>
-     `,
+     468x60 banners (center)
      ========================================================= */
+
+  "center-1": `
+    <script>
+      atOptions = {
+        'key' : '323f1f92767842867de91169792ac12b',
+        'format' : 'iframe',
+        'height' : 60,
+        'width' : 468,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/323f1f92767842867de91169792ac12b/invoke.js"></script>
+  `,
+
+  "center-5": `
+    <script>
+      atOptions = {
+        'key' : '323f1f92767842867de91169792ac12b',
+        'format' : 'iframe',
+        'height' : 60,
+        'width' : 468,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/323f1f92767842867de91169792ac12b/invoke.js"></script>
+  `,
+
+  /* =========================================================
+     300x250 banners — left rail
+     ========================================================= */
+
+  "left-1": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  "left-2": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  "left-3": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  /* =========================================================
+     300x250 banners — center
+     ========================================================= */
+
+  "center-2": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  "center-3": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  /* Native banner (only one instance allowed) */
+  "center-4": `
+    <script async="async" data-cfasync="false" src="https://pl32225311.profitableratecpmnetwork.com/ad440a9f58e4d28f834da09412c224ba/invoke.js"></script>
+    <div id="container-ad440a9f58e4d28f834da09412c224ba"></div>
+  `,
+
+  "center-6": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  "center-7": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  "center-8": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  /* =========================================================
+     300x250 banners — right rail
+     ========================================================= */
+
+  "right-1": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  "right-2": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  "right-3": `
+    <script>
+      atOptions = {
+        'key' : '0aab1b3563f21f24a4a5eb419267d682',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
+  `,
+
+  /* =========================================================
+     Script-only formats
+     ========================================================= */
+
+  "pop": `
+    <script src="https://pl32225309.profitableratecpmnetwork.com/0e/f4/5b/0ef45b9396bcb6195188561aeb05f6c4.js"></script>
+  `,
+
+  "social-bar": `
+    <script src="https://pl32225310.profitableratecpmnetwork.com/53/61/ac/5361ac3b3f7e3369401d3e1fd8797465.js"></script>
+  `,
+
+  "vignette": ``,
+  "global-scripts": ``
 };

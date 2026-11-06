@@ -1,90 +1,82 @@
-# TechSarthi — Ad-Only Page
+# TechSarthi — Ad-Only Page (Adsterra)
 
-A page built only for ads: **top banner, left rail, center stack, right rail, bottom banner,
-sticky anchor, plus popunder / vignette / social-bar script slots** — 21 slots in total.
-Every slot is empty right now, so dashed placeholders show where each ad will appear.
+A page built only for ads. All Adsterra / Profitableratecpm formats are already installed:
+**728×90, 300×250, 468×60, native banner, popunder, social bar and smartlink.**
+
+## Live layout
+
+```
+top-banner (728x90)
+┌──────────┬──────────────┬──────────┐
+│ left-1   │ center-1 468 │ right-1  │
+│ left-2   │ center-2 300 │ right-2  │
+│ left-3   │ center-3 300 │ right-3  │
+│          │ center-4 nat │          │
+│          │ center-5 468 │          │
+│          │ center-6 300 │          │
+│          │ center-7 300 │          │
+│          │ center-8 300 │          │
+│          │ Smartlink CTA│          │
+└──────────┴──────────────┴──────────┘
+bottom-banner (728x90)
+sticky anchor (728x90)
+```
+
+On screens narrower than 1160px the rails move below the center column, and on phones
+everything becomes a single column.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `index.html` | Ad layout with all slots |
+| `index.html` | Ad layout + smartlink CTA |
 | `styles.css` | Responsive ad-wall design |
-| `ads.js` | **Paste all ad codes here** |
-| `app.js` | Ad loader, anchor, back-to-top |
-| `privacy.html` | Privacy policy |
+| `ads.js` | All ad codes (already filled) |
+| `app.js` | Ad loader, sequential script queue, iframe fitter, anchor |
+| `privacy.html` | Privacy policy (not linked, keep for network review) |
 
-## Preview locally
+## Active slots
 
-Double-click `index.html`, or run:
-
-```bash
-npx serve .
-```
-
-## Add ad codes
-
-Open `ads.js`, find the slot in `window.AD_CODES`, paste the snippet inside the backticks:
-
-```js
-"top-banner": `
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-       data-ad-slot="1234567890"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-`,
-```
-
-- One network per slot.
-- AdSense: use the full snippet (ins + script).
-- Monetag / Adsterra `<script>` tags work the same way.
-- Popunder / vignette / social bar go in the hidden slots (`pop`, `vignette`, `social-bar`).
-- After adding the codes, set `ADS_CONFIG.showPlaceholders` to `false`.
-- You can also paste code directly inside the matching `<div class="ad-slot">` in `index.html`.
-
-### Slot map
-
-| Slot key | Position | Size |
+| Slot | Format | Code |
 |---|---|---|
-| `top-banner` | Top of the page | 728×90 / responsive |
-| `left-1` | Left rail, top | 160×600 |
-| `left-2` | Left rail, middle | 160×300 |
-| `left-3` | Left rail, bottom | 160×600 |
-| `center-1` | Center, first | 300×250 / 336×280 |
-| `center-2` | Center | 300×250 |
-| `center-3` | Center | 300×250 |
-| `center-4` | Center | native |
-| `center-5` | Center | 300×250 / 336×280 |
-| `center-6` | Center | 300×250 |
-| `center-7` | Center | 300×250 |
-| `center-8` | Center | native |
-| `right-1` | Right rail, top | 160×600 |
-| `right-2` | Right rail, middle | 160×300 |
-| `right-3` | Right rail, bottom | 160×600 |
-| `bottom-banner` | Bottom of the page | 728×90 |
-| `anchor` | Sticky at the bottom of the screen | anchor |
-| `vignette` | Interstitial / overlay | network builds it |
-| `pop` | Popunder / pop ads | script only |
-| `social-bar` | Social bar | script only |
-| `global-scripts` | Any other script-only network | script only |
+| `top-banner` | 728×90 | Adsterra 728 banner |
+| `bottom-banner` | 728×90 | Adsterra 728 banner |
+| `anchor` | 728×90 sticky | Adsterra 728 banner |
+| `center-1`, `center-5` | 468×60 | Adsterra 468 banner |
+| `left-1..3`, `right-1..3` | 300×250 | Adsterra 300 banner |
+| `center-2`, `center-3`, `center-6..8` | 300×250 | Adsterra 300 banner |
+| `center-4` | Native | Adsterra native banner |
+| `pop` | Popunder | Adsterra popunder |
+| `social-bar` | Social bar | Adsterra social bar |
+| Smartlink | CTA banner in `index.html` | Profitableratecpm smartlink |
+
+Empty hidden slots: `vignette`, `global-scripts` (ready for future networks).
+
+## How it works
+
+- Scripts are injected one slot at a time, so Adsterra's global `atOptions` never gets
+  overwritten by another banner.
+- Popunder and social bar are mounted first, so click-triggered ads are ready early.
+- `fitAdFrames()` scales oversized iframes (for example 728×90 on a phone) to fit the
+  screen, keeping every banner visible.
+- Placeholders are off (`showPlaceholders: false`) because every visible slot has a code.
 
 ## Deploy to GitHub + Vercel
 
 ```bash
 git add .
-git commit -m "ad-only page"
+git commit -m "Adsterra formats installed"
 git push
 ```
 
-Then Vercel → **Add New Project** → import `Ads-Website-` → Framework: **Other** →
+Vercel → **Add New Project** → import `Ads-Website-` → Framework: **Other** →
 leave build command and output directory empty → **Deploy**.
 
 ## Notes
 
-- An ad-only page without content is **not eligible for AdSense** (their policy requires
-  content), but networks like Monetag, Adsterra and PropellerAds usually accept it.
-- Keep one network per slot so you can tell which one earns.
-- `index.html` includes `noindex, nofollow` — remove that tag if you want search traffic.
+- Popunder / social bar behaviour (frequency, click trigger) is controlled by Adsterra,
+  not by this page. There is no forced or hidden click layer.
+- An ad-only page is not eligible for AdSense. Adsterra, Monetag and PropellerAds accept it.
+- If one banner key is reused in several slots, Adsterra may show the same creative in
+  those places. Create extra banner zones in your Adsterra dashboard if you want more variety.
+- `index.html` uses `noindex, nofollow`; remove that meta tag if you want search traffic.

@@ -10,12 +10,14 @@
   );
   var codes = window.AD_CODES || {};
   var mountedSlots = new WeakSet();
+  var scriptChain = Promise.resolve();
 
   var SIZE_HINTS = {
     leaderboard: "728×90 / responsive",
     billboard: "300×250 / 336×280",
     native: "responsive native",
     rectangle: "300×250",
+    wide: "468×60",
     skyscraper: "160×600",
     "sky-short": "160×300",
     anchor: "anchor / sticky",
@@ -154,12 +156,86 @@
     slot.innerHTML = code;
     slot.classList.add("ad-filled");
 
-    runScripts(slot, function () {
-      if (!hasPush) pushAdSense(slot);
+    // Ad networks such as Adsterra use a global `atOptions`. Load one
+    // slot's scripts at a time so two banners cannot overwrite each other.
+    scriptChain = scriptChain.then(function () {
+      return new Promise(function (resolve) {
+        try {
+          runScripts(slot, function () {
+            if (!hasPush) pushAdSense(slot);
 
-      slot.dispatchEvent(new CustomEvent("ad:filled", { bubbles: true, detail: { slot: key } }));
-      console.log("[ads] loaded:", key);
+            slot.dispatchEvent(new CustomEvent("ad:filled", { bubbles: true, detail: { slot: key } }));
+            console.log("[ads] loaded:", key);
+            scheduleFit();
+            resolve();
+          });
+        } catch (err) {
+          console.error("[ads] failed:", key, err);
+          resolve();
+        }
+      });
     });
+  }
+
+  /* ---------------------------------------------------------
+     Scale oversized iframes (728x90 on phones) to fit
+     --------------------------------------------------------- */
+
+  var fitTimer = null;
+
+  function scheduleFit() {
+    if (fitTimer) return;
+    fitTimer = setTimeout(function () {
+      fitTimer = null;
+      fitAdFrames();
+    }, 350);
+  }
+
+  function fitAdFrames() {
+    var slots = document.querySelectorAll(".ad-slot");
+
+    Array.prototype.forEach.call(slots, function (slot) {
+      var frame = slot.querySelector("iframe");
+      if (!frame) return;
+
+      frame.style.transform = "";
+      frame.style.transformOrigin = "";
+      slot.style.height = "";
+
+      var available = slot.clientWidth;
+      var frameWidth = frame.offsetWidth;
+
+      if (!available || !frameWidth || frameWidth <= available + 1) return;
+
+      var scale = available / frameWidth;
+      frame.style.transformOrigin = "top center";
+      frame.style.transform = "scale(" + scale + ")";
+      slot.style.height = Math.ceil(frame.offsetHeight * scale) + "px";
+    });
+  }
+
+  window.addEventListener("load", fitAdFrames);
+  window.addEventListener("resize", scheduleFit);
+
+  document.addEventListener("load", function (event) {
+    if (event.target && event.target.tagName === "IFRAME") scheduleFit();
+  }, true);
+
+  if ("MutationObserver" in window) {
+    var adObserver = new MutationObserver(function (records) {
+      for (var i = 0; i < records.length; i++) {
+        var added = records[i].addedNodes;
+        for (var j = 0; j < added.length; j++) {
+          var node = added[j];
+          if (node.nodeType !== 1) continue;
+          if (node.tagName === "IFRAME" || (node.querySelector && node.querySelector("iframe"))) {
+            scheduleFit();
+            return;
+          }
+        }
+      }
+    });
+    adObserver.observe(document.body, { childList: true, subtree: true });
   }
 
   /* ---------------------------------------------------------
@@ -228,34 +304,19 @@
   }
 
   /* ---------------------------------------------------------
-     Back to top
-     --------------------------------------------------------- */
-
-  var toTop = document.getElementById("to-top");
-
-  function onScroll() {
-    if (!toTop) return;
-    toTop.classList.toggle("show", (window.scrollY || 0) > 400);
-  }
-
-  if (toTop) {
-    window.addEventListener("scroll", onScroll, { passive: true });
-    toTop.addEventListener("click", function () {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-    onScroll();
-  }
-
-  /* ---------------------------------------------------------
      Start
      --------------------------------------------------------- */
 
   function boot() {
+    // Script-only slots (popunder, social bar) load first.
+    var hiddenSlots = document.querySelectorAll(".ad-slot-hidden");
+    Array.prototype.forEach.call(hiddenSlots, mount);
+
     registerSlots(document);
     enableAnchor();
 
-    var year = document.getElementById("year");
-    if (year) year.textContent = String(new Date().getFullYear());
+    setTimeout(fitAdFrames, 900);
+    setTimeout(fitAdFrames, 3000);
   }
 
   if (document.readyState === "loading") {
