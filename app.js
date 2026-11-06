@@ -37,6 +37,9 @@
      Fallback box (keeps the layout stable if an ad is blocked)
      --------------------------------------------------------- */
 
+  var SPONSOR_URL =
+    "https://www.profitableratecpmnetwork.com/ikcvyxdfz?key=cd6c0977b52d857c9da92617450fc185";
+
   function addFallback(slot) {
     if (slot.querySelector(":scope > .ad-fallback")) return;
 
@@ -44,10 +47,118 @@
     box.className = "ad-fallback";
 
     var label = document.createElement("span");
+    label.className = "ad-fallback-label";
     label.textContent = "Advertisement";
 
     box.appendChild(label);
     slot.appendChild(box);
+  }
+
+  /* If the network returns nothing for a slot, the box turns into a real
+     clickable sponsored ad instead of staying dead. */
+  function promoteFallback(slot) {
+    var box = slot.querySelector(":scope > .ad-fallback");
+    if (!box || box.getAttribute("data-promoted") === "1") return;
+    box.setAttribute("data-promoted", "1");
+
+    box.textContent = "";
+
+    var link = document.createElement("a");
+    link.className = "fallback-cta";
+    link.href = SPONSOR_URL;
+    link.target = "_blank";
+    link.rel = "sponsored noopener nofollow";
+
+    var tag = document.createElement("span");
+    tag.className = "fallback-tag";
+    tag.textContent = "Sponsored";
+
+    var title = document.createElement("strong");
+    title.textContent = "See today's offers";
+
+    var arrow = document.createElement("span");
+    arrow.className = "fallback-arrow";
+    arrow.textContent = "\u2192";
+
+    link.appendChild(tag);
+    link.appendChild(title);
+    link.appendChild(arrow);
+    box.appendChild(link);
+
+    slot.classList.add("ad-empty");
+  }
+
+  function revertFallback(slot) {
+    var box = slot.querySelector(":scope > .ad-fallback");
+    slot.classList.remove("ad-empty");
+    if (!box || box.getAttribute("data-promoted") !== "1") return;
+    box.removeAttribute("data-promoted");
+    box.textContent = "";
+
+    var label = document.createElement("span");
+    label.className = "ad-fallback-label";
+    label.textContent = "Advertisement";
+    box.appendChild(label);
+  }
+
+  /* Does this document (or a nested ad document) actually show a creative? */
+  function hasCreative(root, depth, ignore) {
+    if (!root || depth > 3) return false;
+
+    function skipped(el) {
+      return !!(ignore && el && (el === ignore || ignore.contains(el)));
+    }
+
+    var img = root.querySelector("img");
+    if (img && !skipped(img) && img.naturalWidth > 8) return true;
+
+    var links = root.querySelectorAll("a[href]");
+    for (var i = 0; i < links.length; i++) {
+      if (skipped(links[i])) continue;
+      var lr = links[i].getBoundingClientRect();
+      if (lr.width > 8 && lr.height > 8) return true;
+    }
+
+    var media = root.querySelectorAll("canvas, video, ins.adsbygoogle, object, embed");
+    for (var j = 0; j < media.length; j++) {
+      if (skipped(media[j])) continue;
+      var mr = media[j].getBoundingClientRect();
+      if (mr.width > 8 && mr.height > 8) return true;
+    }
+
+    var frames = root.querySelectorAll("iframe");
+    for (var k = 0; k < frames.length; k++) {
+      if (skipped(frames[k])) continue;
+      var inner = null;
+      try { inner = frames[k].contentDocument; } catch (e) { return true; }
+      if (hasCreative(inner, depth + 1, null)) return true;
+    }
+
+    return false;
+  }
+
+  function watchFill(slot, frame) {
+    var timers = [1800, 4000, 7000, 12000, 18000];
+
+    timers.forEach(function (ms) {
+      setTimeout(function () {
+        var filled = false;
+
+        if (frame && frame.isConnected) {
+          var doc = null;
+          try { doc = frame.contentDocument; } catch (e) { filled = true; }
+          filled = filled || hasCreative(doc, 0, null);
+        } else {
+          filled = hasCreative(slot, 0, slot.querySelector(":scope > .ad-fallback"));
+        }
+
+        if (filled) {
+          revertFallback(slot);
+        } else if (ms >= 4000) {
+          promoteFallback(slot);
+        }
+      }, ms);
+    });
   }
 
   function showPlaceholder(slot) {
@@ -177,6 +288,7 @@
     slot.appendChild(frame);
     slot.classList.add("ad-filled");
     scheduleFit();
+    watchFill(slot, frame);
     console.log("[ads] banner:", key);
   }
 
@@ -189,6 +301,7 @@
     runScripts(slot, function () {
       if (!/\.push\s*\(/.test(code)) pushAdSense(slot);
       scheduleFit();
+      watchFill(slot, null);
       console.log("[ads] direct:", key);
     });
   }

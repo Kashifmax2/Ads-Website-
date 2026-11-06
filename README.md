@@ -65,6 +65,9 @@ Empty hidden slots: `vignette`, `global-scripts` (ready for future networks).
   screen, keeping every banner fully visible.
 - Placeholders are off (`showPlaceholders: false`); the faint "Advertisement" layer is
   only visible if an ad is blocked.
+- **No dead boxes:** after ~4s, if a slot still has no creative inside, that box turns
+  into a real clickable sponsored ad button (smartlink). If the ad fills later, the
+  button is removed automatically so a live ad is never covered.
 
 ## Deploy to GitHub + Vercel
 
