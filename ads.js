@@ -8,7 +8,7 @@
 
 window.ADS_CONFIG = {
   showPlaceholders: false,
-  lazyLoad: false,
+  lazyLoad: true,
   anchorEnabled: true
 };
 

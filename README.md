@@ -48,18 +48,23 @@ everything becomes a single column.
 | `center-4` | Native | Adsterra native banner |
 | `pop` | Popunder | Adsterra popunder |
 | `social-bar` | Social bar | Adsterra social bar |
-| Smartlink | CTA banner in `index.html` | Profitableratecpm smartlink |
+| Smartlink | 2 CTA banners in `index.html` (top + center) | Profitableratecpm smartlink |
 
 Empty hidden slots: `vignette`, `global-scripts` (ready for future networks).
 
 ## How it works
 
-- Scripts are injected one slot at a time, so Adsterra's global `atOptions` never gets
-  overwritten by another banner.
+- Every banner runs inside its own `srcdoc` iframe, so all banners load **in parallel**
+  and Adsterra's global `atOptions` can never be overwritten by another banner.
 - Popunder and social bar are mounted first, so click-triggered ads are ready early.
-- `fitAdFrames()` scales oversized iframes (for example 728×90 on a phone) to fit the
-  screen, keeping every banner visible.
-- Placeholders are off (`showPlaceholders: false`) because every visible slot has a code.
+- Banners below the fold are lazy-mounted (900px margin), which keeps the first paint
+  under ~400ms.
+- Each slot reserves its exact ad height in CSS, so the page never collapses or jumps
+  while the network answers.
+- `fitAdFrames()` scales oversized banners (for example 728×90 on a phone) to fit the
+  screen, keeping every banner fully visible.
+- Placeholders are off (`showPlaceholders: false`); the faint "Advertisement" layer is
+  only visible if an ad is blocked.
 
 ## Deploy to GitHub + Vercel
 

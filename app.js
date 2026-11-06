@@ -1,33 +1,54 @@
 /* ===========================================================
-   TechSarthi — ad loader + page interactions
+   TechSarthi — fast ad loader
+   -----------------------------------------------------------
+   Banners are isolated in their own iframes (parallel loading,
+   no global atOptions clashes). Popunder / social bar / native
+   load directly. Nothing waits on an 8 second chain.
    =========================================================== */
 (function () {
   "use strict";
 
   var config = Object.assign(
-    { showPlaceholders: true, lazyLoad: false, anchorEnabled: true },
+    { showPlaceholders: false, lazyLoad: false, anchorEnabled: true },
     window.ADS_CONFIG || {}
   );
   var codes = window.AD_CODES || {};
   var mountedSlots = new WeakSet();
-  var scriptChain = Promise.resolve();
+
+  var BANNER_SIZES = {
+    leaderboard: { w: 728, h: 90 },
+    anchor: { w: 728, h: 90 },
+    rectangle: { w: 300, h: 250 },
+    wide: { w: 468, h: 60 }
+  };
 
   var SIZE_HINTS = {
-    leaderboard: "728×90 / responsive",
+    leaderboard: "728×90",
     billboard: "300×250 / 336×280",
     native: "responsive native",
     rectangle: "300×250",
     wide: "468×60",
-    skyscraper: "160×600",
-    "sky-short": "160×300",
-    anchor: "anchor / sticky",
+    anchor: "728×90 sticky",
     vignette: "interstitial",
     script: "script only"
   };
 
   /* ---------------------------------------------------------
-     Helpers
+     Fallback box (keeps the layout stable if an ad is blocked)
      --------------------------------------------------------- */
+
+  function addFallback(slot) {
+    if (slot.querySelector(":scope > .ad-fallback")) return;
+
+    var box = document.createElement("div");
+    box.className = "ad-fallback";
+
+    var label = document.createElement("span");
+    label.textContent = "Advertisement";
+
+    box.appendChild(label);
+    slot.appendChild(box);
+  }
 
   function showPlaceholder(slot) {
     if (!config.showPlaceholders) return;
@@ -46,7 +67,7 @@
 
     var hint = document.createElement("span");
     hint.className = "ad-placeholder-hint";
-    hint.textContent = (SIZE_HINTS[size] || "ad space") + " — paste your code in ads.js";
+    hint.textContent = SIZE_HINTS[size] || "ad space";
 
     box.appendChild(label);
     box.appendChild(name);
@@ -54,9 +75,11 @@
     slot.appendChild(box);
   }
 
+  /* ---------------------------------------------------------
+     Run scripts for direct (non-iframe) slots
+     --------------------------------------------------------- */
+
   function runScripts(root, done) {
-    // Scripts inserted with innerHTML do not execute, so rebuild them.
-    // Wait for each external script to load before running the next one.
     var scripts = Array.prototype.slice.call(root.querySelectorAll("script"));
 
     if (!scripts.length) {
@@ -104,7 +127,7 @@
         };
         fresh.addEventListener("load", finish);
         fresh.addEventListener("error", finish);
-        setTimeout(finish, 8000);
+        setTimeout(finish, 5000);
         root.appendChild(fresh);
       } else {
         root.appendChild(fresh);
@@ -121,64 +144,86 @@
     Array.prototype.forEach.call(units, function () {
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {
-        /* The AdSense library has not loaded yet. */
-      }
+      } catch (e) {}
     });
   }
 
   /* ---------------------------------------------------------
-     Mount one slot
+     Mount helpers
      --------------------------------------------------------- */
+
+  function mountBanner(slot, code, size, key) {
+    var frame = document.createElement("iframe");
+
+    frame.className = "ad-frame";
+    frame.width = size.w;
+    frame.height = size.h;
+    frame.setAttribute("frameborder", "0");
+    frame.setAttribute("scrolling", "no");
+    frame.setAttribute("title", "Advertisement");
+
+    var inAnchor = !!slot.closest("#anchor-ad");
+    var nearTop = slot.getBoundingClientRect().top < window.innerHeight + 200;
+    frame.loading = (inAnchor || nearTop) ? "eager" : "lazy";
+
+    frame.srcdoc =
+      '<!doctype html><html><head><meta charset="utf-8">' +
+      '<style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}' +
+      'iframe,img{max-width:100%;border:0;display:block}</style></head><body>' +
+      code +
+      "</body></html>";
+
+    frame.addEventListener("load", scheduleFit);
+    slot.appendChild(frame);
+    slot.classList.add("ad-filled");
+    scheduleFit();
+    console.log("[ads] banner:", key);
+  }
+
+  function mountDirect(slot, code, key) {
+    slot.innerHTML = code;
+    slot.classList.add("ad-filled");
+
+    if (!slot.classList.contains("ad-slot-hidden")) addFallback(slot);
+
+    runScripts(slot, function () {
+      if (!/\.push\s*\(/.test(code)) pushAdSense(slot);
+      scheduleFit();
+      console.log("[ads] direct:", key);
+    });
+  }
 
   function mount(slot) {
     if (mountedSlots.has(slot)) return;
     mountedSlots.add(slot);
 
     var key = slot.getAttribute("data-slot") || "";
-    var isHiddenSlot = slot.classList.contains("ad-slot-hidden");
+    var isHidden = slot.classList.contains("ad-slot-hidden");
 
-    // Code pasted directly in HTML: leave it alone.
+    // Code already pasted directly in HTML.
     if (slot.childElementCount > 0 || slot.textContent.trim() !== "") return;
 
     var code = (codes[key] || "").trim();
+    var size = BANNER_SIZES[slot.getAttribute("data-size")];
+
+    if (!isHidden) addFallback(slot);
 
     if (!code) {
-      if (!isHiddenSlot) {
-        showPlaceholder(slot);
-        slot.dispatchEvent(new CustomEvent("ad:placeholder", { bubbles: true, detail: { slot: key } }));
-      }
+      if (!isHidden && config.showPlaceholders) showPlaceholder(slot);
       return;
     }
 
-    var hasPush = /\.push\s*\(/.test(code);
+    if (!isHidden && size) {
+      mountBanner(slot, code, size, key);
+    } else {
+      mountDirect(slot, code, key);
+    }
 
-    slot.innerHTML = code;
-    slot.classList.add("ad-filled");
-
-    // Ad networks such as Adsterra use a global `atOptions`. Load one
-    // slot's scripts at a time so two banners cannot overwrite each other.
-    scriptChain = scriptChain.then(function () {
-      return new Promise(function (resolve) {
-        try {
-          runScripts(slot, function () {
-            if (!hasPush) pushAdSense(slot);
-
-            slot.dispatchEvent(new CustomEvent("ad:filled", { bubbles: true, detail: { slot: key } }));
-            console.log("[ads] loaded:", key);
-            scheduleFit();
-            resolve();
-          });
-        } catch (err) {
-          console.error("[ads] failed:", key, err);
-          resolve();
-        }
-      });
-    });
+    slot.dispatchEvent(new CustomEvent("ad:filled", { bubbles: true, detail: { slot: key } }));
   }
 
   /* ---------------------------------------------------------
-     Scale oversized iframes (728x90 on phones) to fit
+     Fit oversized banners on small screens
      --------------------------------------------------------- */
 
   var fitTimer = null;
@@ -188,55 +233,36 @@
     fitTimer = setTimeout(function () {
       fitTimer = null;
       fitAdFrames();
-    }, 350);
+    }, 250);
   }
 
   function fitAdFrames() {
-    var slots = document.querySelectorAll(".ad-slot");
+    var frames = document.querySelectorAll("iframe.ad-frame");
 
-    Array.prototype.forEach.call(slots, function (slot) {
-      var frame = slot.querySelector("iframe");
-      if (!frame) return;
+    Array.prototype.forEach.call(frames, function (frame) {
+      var slot = frame.parentElement;
+      if (!slot) return;
 
       frame.style.transform = "";
       frame.style.transformOrigin = "";
       slot.style.height = "";
+      slot.classList.remove("ad-scaled");
 
       var available = slot.clientWidth;
       var frameWidth = frame.offsetWidth;
 
       if (!available || !frameWidth || frameWidth <= available + 1) return;
 
-      var scale = available / frameWidth;
+      var scale = Math.max(available / frameWidth, 0.28);
       frame.style.transformOrigin = "top center";
       frame.style.transform = "scale(" + scale + ")";
       slot.style.height = Math.ceil(frame.offsetHeight * scale) + "px";
+      slot.classList.add("ad-scaled");
     });
   }
 
   window.addEventListener("load", fitAdFrames);
   window.addEventListener("resize", scheduleFit);
-
-  document.addEventListener("load", function (event) {
-    if (event.target && event.target.tagName === "IFRAME") scheduleFit();
-  }, true);
-
-  if ("MutationObserver" in window) {
-    var adObserver = new MutationObserver(function (records) {
-      for (var i = 0; i < records.length; i++) {
-        var added = records[i].addedNodes;
-        for (var j = 0; j < added.length; j++) {
-          var node = added[j];
-          if (node.nodeType !== 1) continue;
-          if (node.tagName === "IFRAME" || (node.querySelector && node.querySelector("iframe"))) {
-            scheduleFit();
-            return;
-          }
-        }
-      }
-    });
-    adObserver.observe(document.body, { childList: true, subtree: true });
-  }
 
   /* ---------------------------------------------------------
      Lazy loading (optional)
@@ -251,7 +277,7 @@
         obs.unobserve(entry.target);
         mount(entry.target);
       });
-    }, { rootMargin: "700px 0px", threshold: 0 });
+    }, { rootMargin: "900px 0px", threshold: 0 });
   }
 
   function registerSlots(scope) {
@@ -275,7 +301,7 @@
   }
 
   /* ---------------------------------------------------------
-     Sticky anchor ad
+     Sticky anchor
      --------------------------------------------------------- */
 
   var anchorWrap = document.getElementById("anchor-ad");
@@ -308,15 +334,15 @@
      --------------------------------------------------------- */
 
   function boot() {
-    // Script-only slots (popunder, social bar) load first.
+    // Popunder and social bar first, so click-triggered ads are ready.
     var hiddenSlots = document.querySelectorAll(".ad-slot-hidden");
     Array.prototype.forEach.call(hiddenSlots, mount);
 
     registerSlots(document);
     enableAnchor();
 
-    setTimeout(fitAdFrames, 900);
-    setTimeout(fitAdFrames, 3000);
+    setTimeout(fitAdFrames, 500);
+    setTimeout(fitAdFrames, 2000);
   }
 
   if (document.readyState === "loading") {
@@ -325,9 +351,9 @@
     boot();
   }
 
-  // Useful if you add slots dynamically later.
   window.TechSarthiAds = {
     mount: function (scope) { registerSlots(scope || document); },
-    mountSlot: mount
+    mountSlot: mount,
+    fit: fitAdFrames
   };
 })();
