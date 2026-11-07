@@ -29,11 +29,37 @@ everything becomes a single column.
 
 | File | Purpose |
 |---|---|
-| `index.html` | Ad layout + smartlink CTA |
-| `styles.css` | Responsive ad-wall design |
-| `ads.js` | All ad codes (already filled) |
-| `app.js` | Ad loader, sequential script queue, iframe fitter, anchor |
+| `index.html` | Page 1 — ad layout + smartlink CTA |
+| `page2.html` | Page 2 — URL-only page for the second network (ProfitOn) |
+| `styles.css` | Responsive ad-wall design (shared by both pages) |
+| `ads.js` | Page 1 ad codes (Adsterra) |
+| `ads2.js` | Page 2 ad codes (ProfitOn slots + Adsterra defaults) |
+| `app.js` | Ad loader, parallel iframes, lazy loading, fitter, anchor |
+| `vercel.json` | `cleanUrls` so `/page2` works without `.html` |
 | `privacy.html` | Privacy policy (not linked, keep for network review) |
+
+## Page 2 (`/page2`)
+
+Page 2 is intentionally **not linked** from page 1 — there is no button, no menu item,
+no footer link. It only opens when the URL is typed:
+
+```
+https://your-project.vercel.app/page2
+```
+
+`vercel.json` enables `cleanUrls`, so `/page2` serves `page2.html`. `/page2.html`
+also works and redirects to `/page2`.
+
+To add the second network's ads, open **`ads2.js`** and paste the snippets into the
+matching `p2-*` keys. Every empty key falls back to a sponsored button instead of a
+dead box.
+
+Both pages carry the ProfitOn verification meta tag:
+
+```html
+<meta name="profiton-domain-verification" content="e95c9ff57c43ef7f27b93172f4b1ba4f611fa2ead5712ec9dd052ca87fd2babe" />
+```
+
 
 ## Active slots
 

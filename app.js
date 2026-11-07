@@ -37,8 +37,10 @@
      Fallback box (keeps the layout stable if an ad is blocked)
      --------------------------------------------------------- */
 
-  var SPONSOR_URL =
-    "https://www.profitableratecpmnetwork.com/ikcvyxdfz?key=cd6c0977b52d857c9da92617450fc185";
+  var SPONSOR_URL = config.sponsorUrl === ""
+    ? ""
+    : (config.sponsorUrl ||
+      "https://www.profitableratecpmnetwork.com/ikcvyxdfz?key=cd6c0977b52d857c9da92617450fc185");
 
   function addFallback(slot) {
     if (slot.querySelector(":scope > .ad-fallback")) return;
@@ -57,6 +59,7 @@
   /* If the network returns nothing for a slot, the box turns into a real
      clickable sponsored ad instead of staying dead. */
   function promoteFallback(slot) {
+    if (!SPONSOR_URL) return;
     var box = slot.querySelector(":scope > .ad-fallback");
     if (!box || box.getAttribute("data-promoted") === "1") return;
     box.setAttribute("data-promoted", "1");
@@ -413,6 +416,32 @@
     });
   }
 
+  /* Safety net: if the page jumps (End key, anchor link, fast flick),
+     mount every slot near the new position right away. */
+  var sweepTimer = null;
+
+  function sweep() {
+    var slots = document.querySelectorAll(".ad-slot[data-ad-watched]:not(.ad-filled)");
+    var limit = window.innerHeight + 1200;
+
+    Array.prototype.forEach.call(slots, function (slot) {
+      if (slot.classList.contains("ad-slot-hidden")) return;
+      var rect = slot.getBoundingClientRect();
+      if (rect.top < limit && rect.bottom > -1200) {
+        if (observer) observer.unobserve(slot);
+        mount(slot);
+      }
+    });
+  }
+
+  window.addEventListener("scroll", function () {
+    if (sweepTimer) return;
+    sweepTimer = setTimeout(function () {
+      sweepTimer = null;
+      sweep();
+    }, 150);
+  }, { passive: true });
+
   /* ---------------------------------------------------------
      Sticky anchor
      --------------------------------------------------------- */
@@ -456,6 +485,12 @@
 
     setTimeout(fitAdFrames, 500);
     setTimeout(fitAdFrames, 2000);
+
+    // Layout grows as ads arrive, so re-check what is near the viewport.
+    setTimeout(sweep, 600);
+    setTimeout(sweep, 1800);
+    setTimeout(sweep, 3500);
+    setTimeout(sweep, 7000);
   }
 
   if (document.readyState === "loading") {
