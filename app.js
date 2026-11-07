@@ -60,6 +60,8 @@
      clickable sponsored ad instead of staying dead. */
   function promoteFallback(slot) {
     if (!SPONSOR_URL) return;
+    /* Slots that host a third-party widget must never be covered by our CTA. */
+    if (slot.hasAttribute("data-no-cta")) return;
     var box = slot.querySelector(":scope > .ad-fallback");
     if (!box || box.getAttribute("data-promoted") === "1") return;
     box.setAttribute("data-promoted", "1");

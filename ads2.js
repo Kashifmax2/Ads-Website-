@@ -19,7 +19,9 @@
 window.ADS_CONFIG = {
   showPlaceholders: false,
   lazyLoad: true,
-  anchorEnabled: true
+  anchorEnabled: true,
+  /* ProfitOn smartlink — used by the top CTA and by empty slots */
+  sponsorUrl: "https://sb.inveilfunds.com/iKWsbv6LyrYGh/161011"
 };
 
 (function () {
@@ -63,22 +65,22 @@ window.ADS_CONFIG = {
     "p2-center-8": banner(KEY_300, 300, 250),
 
     /* =========================================================
-       PROFITON SLOTS — paste the codes here
+       PROFITON SLOTS — pasted codes
        ========================================================= */
 
-    /* Native / in-feed ad */
-    "p2-center-4": "",
+    /* Shuffle box (ProfitOn) — visible in-feed widget */
+    "p2-center-4": '<script data-cfasync="false" async type="text/javascript" src="https://rn.kirantisalem.com/stBXnOeQSyJBTGMw/161012"><\/script>',
 
-    /* Popunder */
-    "p2-pop": "",
+    /* Pops (ProfitOn) */
+    "p2-pop": '<script data-cfasync="false" async type="text/javascript" src="https://ll.sunrosehippi.com/rgYXM4X8TKB5YvtRu/161010"><\/script>',
 
-    /* Social bar */
+    /* Extra global script slot (kept for future codes) */
+    "p2-global": "",
+
+    /* Social bar (no code supplied yet) */
     "p2-social": "",
 
-    /* Interstitial / vignette */
-    "p2-vignette": "",
-
-    /* Any other global script */
-    "p2-global": ""
+    /* Interstitial / vignette (no code supplied yet) */
+    "p2-vignette": ""
   };
 })();

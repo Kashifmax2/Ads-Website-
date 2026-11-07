@@ -54,6 +54,18 @@ To add the second network's ads, open **`ads2.js`** and paste the snippets into 
 matching `p2-*` keys. Every empty key falls back to a sponsored button instead of a
 dead box.
 
+Current ProfitOn setup on page 2:
+
+| Slot | Format | Code |
+|---|---|---|
+| `p2-center-4` | Shuffle box (visible in-feed) | ProfitOn `161012` |
+| `p2-pop` | Pops / popunder | ProfitOn `161010` |
+| Top CTA + empty-slot fallback | Smartlink | ProfitOn `161011` |
+| `p2-global` | Extra script slot | empty (for future codes) |
+
+`p2-center-4` is marked `data-no-cta`, so the smartlink button never covers the
+third-party widget.
+
 Both pages carry the ProfitOn verification meta tag:
 
 ```html
