@@ -42,11 +42,13 @@ everything becomes a single column.
 |---|---|
 | `index.html` | Page 1 — ad layout + smartlink CTA |
 | `page2.html` | Page 2 — URL-only page for the second network (ProfitOn) |
-| `styles.css` | Responsive ad-wall design (shared by both pages) |
+| `page3.html` | Page 3 — URL-only page for the third network (CCNSAD, ready to paste) |
+| `styles.css` | Responsive ad-wall design (shared by all ad pages) |
 | `ads.js` | Page 1 ad codes (Adsterra) |
 | `ads2.js` | Page 2 ad codes (ProfitOn slots + Adsterra defaults) |
+| `ads3.js` | Page 3 ad codes (CCNSAD overrides + Adsterra defaults) |
 | `app.js` | Ad loader, parallel iframes, lazy loading, fitter, anchor |
-| `vercel.json` | `cleanUrls` so `/page2` works without `.html` |
+| `vercel.json` | `cleanUrls` so `/page2` and `/page3` work without `.html` |
 | `privacy.html` | Privacy policy (not linked, keep for network review) |
 
 ## Page 2 (`/page2`)
@@ -77,12 +79,39 @@ Current ProfitOn setup on page 2:
 `p2-center-4` is marked `data-no-cta`, so the smartlink button never covers the
 third-party widget.
 
-Both pages carry the ProfitOn verification meta tag:
+## Page 3 (`/page3`)
+
+Page 3 is a copy of the page 2 layout with its own slot keys (`p3-*`), its own config
+file (`ads3.js`), and no link from page 1 or page 2:
+
+```
+https://your-project.vercel.app/page3
+```
+
+Every visible slot starts with an Adsterra banner, so the page is filled from day one.
+
+To run another network here — CCNSAD, Monetag, a second ProfitOn placement — open
+**`ads3.js`** and paste the code in the `overrides` block:
+
+```js
+var overrides = {
+  "p3-top": '<script async src="https://..."></script>',
+  "p3-pop": '<script async src="https://..."></script>'
+};
+```
+
+A slot listed there replaces the Adsterra banner for that slot only. Slots you leave out
+keep Adsterra. Hidden slots (`p3-pop`, `p3-social`, `p3-vignette`, `p3-global`) load
+nothing until you give them a code.
+
+`ads3.js` is never loaded by page 1 or page 2, so changing it cannot affect them.
+
+Every page carries both verification metas:
 
 ```html
 <meta name="profiton-domain-verification" content="e95c9ff57c43ef7f27b93172f4b1ba4f611fa2ead5712ec9dd052ca87fd2babe" />
+<meta name="ccnsad-site-verification" content="fa128531eff8c7db" />
 ```
-
 
 ## Active slots
 
