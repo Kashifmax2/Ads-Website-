@@ -103,8 +103,10 @@ var overrides = {
 ```
 
 A slot listed there replaces the Adsterra banner for that slot only. Slots you leave out
-keep Adsterra. Hidden slots (`p3-pop`, `p3-social`, `p3-vignette`, `p3-global`) load
-nothing until you give them a code.
+keep Adsterra. `p3-pop` already runs the ProfitOn popunder (`161010`) as a safety net so
+the page earns on every click before CCNSAD is installed — override it with the CCNSAD
+popunder code when it arrives. `p3-social`, `p3-vignette` and `p3-global` load nothing
+until you give them a code.
 
 `ads3.js` is never loaded by page 1 or page 2, so changing it cannot affect them.
 
@@ -160,7 +162,7 @@ Every page carries all three verification metas:
 | `center-4` | Native | Adsterra native banner |
 | `pop` | Popunder | Adsterra popunder |
 | `social-bar` | Social bar | Adsterra social bar |
-| Smartlink | 2 CTA banners in `index.html` (top + center) | Profitableratecpm smartlink |
+| Smartlink | 2 CTA banners in `index.html` (top + center) + every empty-slot fallback | ProfitOn `161011` |
 
 Empty hidden slots: `vignette`, `global-scripts` (ready for future networks).
 
@@ -180,6 +182,11 @@ Empty hidden slots: `vignette`, `global-scripts` (ready for future networks).
 - **No dead boxes:** after ~4s, if a slot still has no creative inside, that box turns
   into a real clickable sponsored ad button (smartlink). If the ad fills later, the
   button is removed automatically so a live ad is never covered.
+- Every fallback button points at the ProfitOn smartlink `161011`
+  (`sb.inveilfunds.com/...`). Do **not** put a rotating smartlink here that can land on
+  low-quality crypto offers — page 1 once used `profitableratecpmnetwork.com/ikcvyxdfz`,
+  which started serving the "AdZilla" memecoin page on every click. Pages 2–4 set their
+  own `sponsorUrl`, so this default only affects page 1.
 
 ## Deploy to GitHub + Vercel
 

@@ -40,7 +40,7 @@
   var SPONSOR_URL = config.sponsorUrl === ""
     ? ""
     : (config.sponsorUrl ||
-      "https://www.profitableratecpmnetwork.com/ikcvyxdfz?key=cd6c0977b52d857c9da92617450fc185");
+      "https://sb.inveilfunds.com/iKWsbv6LyrYGh/161011");
 
   function addFallback(slot) {
     if (slot.querySelector(":scope > .ad-fallback")) return;
@@ -55,6 +55,14 @@
     box.appendChild(label);
     slot.appendChild(box);
   }
+
+  var CTA_LABELS = [
+    "See today's offers",
+    "Open the sponsored offer",
+    "Check today's deal",
+    "View sponsored offer"
+  ];
+  var ctaIndex = 0;
 
   /* If the network returns nothing for a slot, the box turns into a real
      clickable sponsored ad instead of staying dead. */
@@ -79,7 +87,7 @@
     tag.textContent = "Sponsored";
 
     var title = document.createElement("strong");
-    title.textContent = "See today's offers";
+    title.textContent = CTA_LABELS[ctaIndex++ % CTA_LABELS.length];
 
     var arrow = document.createElement("span");
     arrow.className = "fallback-arrow";

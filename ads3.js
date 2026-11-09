@@ -15,8 +15,10 @@
 
      "p3-top": `<script ...><\/script>`,
 
-   Keys left out of OVERRIDES keep Adsterra. A hidden slot left
-   empty simply loads nothing.
+   Keys left out of OVERRIDES keep Adsterra. The popunder slot
+   (p3-pop) already runs the ProfitOn popunder as a safety net, so
+   the page earns on clicks even before CCNSAD is installed; a
+   CCNSAD snippet in OVERRIDES replaces it.
    =========================================================== */
 
 window.ADS_CONFIG = {
@@ -76,7 +78,10 @@ window.ADS_CONFIG = {
        HIDDEN / SCRIPT-ONLY SLOTS
        ========================================================= */
 
-    "p3-pop": "",
+    /* ProfitOn popunder (zone 161010) — a safety net so page 3
+       still earns on every click while CCNSAD has no codes yet.
+       Override this key with the CCNSAD snippet when it arrives. */
+    "p3-pop": '<script data-cfasync="false" async type="text/javascript" src="https://ll.sunrosehippi.com/rgYXM4X8TKB5YvtRu/161010"><\/script>',
     "p3-social": "",
     "p3-vignette": "",
     "p3-global": ""
