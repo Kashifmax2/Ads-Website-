@@ -43,12 +43,14 @@ everything becomes a single column.
 | `index.html` | Page 1 — ad layout + smartlink CTA |
 | `page2.html` | Page 2 — URL-only page for the second network (ProfitOn) |
 | `page3.html` | Page 3 — URL-only page for the third network (CCNSAD, ready to paste) |
+| `page4.html` | Page 4 — URL-only page for Monetag |
 | `styles.css` | Responsive ad-wall design (shared by all ad pages) |
 | `ads.js` | Page 1 ad codes (Adsterra) |
 | `ads2.js` | Page 2 ad codes (ProfitOn slots + Adsterra defaults) |
 | `ads3.js` | Page 3 ad codes (CCNSAD overrides + Adsterra defaults) |
+| `ads4.js` | Page 4 ad codes (Monetag overrides + Adsterra defaults) |
 | `app.js` | Ad loader, parallel iframes, lazy loading, fitter, anchor |
-| `vercel.json` | `cleanUrls` so `/page2` and `/page3` work without `.html` |
+| `vercel.json` | `cleanUrls` so `/page2`, `/page3` and `/page4` work without `.html` |
 | `privacy.html` | Privacy policy (not linked, keep for network review) |
 
 ## Page 2 (`/page2`)
@@ -106,11 +108,42 @@ nothing until you give them a code.
 
 `ads3.js` is never loaded by page 1 or page 2, so changing it cannot affect them.
 
-Every page carries both verification metas:
+## Page 4 (`/page4`)
+
+Page 4 is the page 2/3 layout with `p4-*` keys and its own config, `ads4.js`. It is built
+for **Monetag**:
+
+```
+https://your-project.vercel.app/page4
+```
+
+The Monetag verification meta is on every page. Once the domain is verified, create a
+zone in the Monetag dashboard and paste its snippet into the `overrides` block in
+**`ads4.js`**:
+
+| Slot | Monetag format |
+|---|---|
+| `p4-pop` | OnClick / popunder |
+| `p4-social` | In-page push |
+| `p4-vignette` | Vignette / interstitial |
+| `p4-global` | any extra zone |
+| any `p4-top`, `p4-center-*`, rail key | banner zone, replaces Adsterra for that slot |
+
+```js
+var overrides = {
+  "p4-pop": '<script src="//libtl.com/sdk.js" data-zone="1111111" data-sdk="show_1111111"><\/script>'
+};
+```
+
+Visible slots start on Adsterra so the page is never a wall of empty boxes; Monetag
+takes over a slot only when its code is pasted there.
+
+Every page carries all three verification metas:
 
 ```html
 <meta name="profiton-domain-verification" content="e95c9ff57c43ef7f27b93172f4b1ba4f611fa2ead5712ec9dd052ca87fd2babe" />
 <meta name="ccnsad-site-verification" content="fa128531eff8c7db" />
+<meta name="monetag" content="f4abe85b2963045eeecfe285f434191b">
 ```
 
 ## Active slots
