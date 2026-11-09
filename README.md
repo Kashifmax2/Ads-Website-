@@ -3,6 +3,17 @@
 A page built only for ads. All Adsterra / Profitableratecpm formats are already installed:
 **728×90, 300×250, 468×60, native banner, popunder, social bar and smartlink.**
 
+## Two properties in this repo
+
+| Folder | What it is | Deploy |
+|---|---|---|
+| repo root | The original ad-wall pages (`/` and `/page2`) | existing Vercel project |
+| `cryptocurrency-website/` | **Chainwise**, a separate crypto publication for ad networks | its own Vercel project, Root Directory `cryptocurrency-website` |
+
+Chainwise is a different site, not a page of this one. Its ad codes live in
+`cryptocurrency-website/ads.js`, and its deploy steps are in
+`cryptocurrency-website/README.md`.
+
 ## Live layout
 
 ```
