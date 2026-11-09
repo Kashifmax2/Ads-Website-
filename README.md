@@ -117,26 +117,27 @@ for **Monetag**:
 https://your-project.vercel.app/page4
 ```
 
-The Monetag verification meta is on every page. Once the domain is verified, create a
-zone in the Monetag dashboard and paste its snippet into the `overrides` block in
-**`ads4.js`**:
+The Monetag verification meta is on every page, and page 4 now runs every zone:
 
-| Slot | Monetag format |
-|---|---|
-| `p4-pop` | OnClick / popunder |
-| `p4-social` | In-page push |
-| `p4-vignette` | Vignette / interstitial |
-| `p4-global` | any extra zone |
-| any `p4-top`, `p4-center-*`, rail key | banner zone, replaces Adsterra for that slot |
+| Zone | Format | Where it is installed |
+|---|---|---|
+| 307882 | Multitag "Crazy tag" — push 12224249, vignette 12224248, in-page push 12224247, OnClick multi 12224246 | `p4-global` |
+| 12224255 | OnClick (Popunder) "Happy tag" | `p4-pop` |
+| 12224273 | Direct Link "Wise tag" | `sponsorUrl` + the top CTA in `page4.html` |
 
 ```js
 var overrides = {
-  "p4-pop": '<script src="//libtl.com/sdk.js" data-zone="1111111" data-sdk="show_1111111"><\/script>'
+  "p4-pop":    '<script>…data.zone=12224255…<\/script>',
+  "p4-global": '<script src="https://quge5.com/88/tag.min.js" data-zone="307882" async data-cfasync="false"><\/script>'
 };
 ```
 
-Visible slots start on Adsterra so the page is never a wall of empty boxes; Monetag
-takes over a slot only when its code is pasted there.
+`p4-social` and `p4-vignette` stay empty on purpose: the multitag already serves push,
+in-page push and vignette, so a second code there would double-count the same impression.
+
+Banner format zones can also be pasted into any visible `p4-*` slot; that replaces the
+Adsterra banner for that slot only. Visible slots start on Adsterra so the page is never
+a wall of empty boxes.
 
 Every page carries all three verification metas:
 
