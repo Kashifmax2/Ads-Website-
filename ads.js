@@ -1,265 +1,51 @@
 /* ===========================================================
-   TechSarthi — Adsterra / Profitableratecpm ad codes
+   TechSarthi — live ad codes
    -----------------------------------------------------------
-   Every visible slot is filled below.
-   Hidden slots: popunder, social bar, native, vignette.
-   Smartlink is placed directly in index.html.
+   Only placements that actually fill are kept here.
+
+     in-article   300x250 MultiTag banner, inside the story
+     sidebar      300x250 MultiTag banner, article rail
+     footer       300x250 MultiTag banner, end of page
+
+   Everything that used to sit on this domain and no longer
+   returns a creative has been removed: the Adsterra 728x90 /
+   468x60 / 300x250 banners (all 0x0 fills), the Adsterra
+   native widget, the social bar, the popunder and the
+   ProfitOn smartlink buttons. The smartlink redirected through
+   random `.cfd` domains and was the source of the AdZilla
+   memecoin pages this site kept opening.
+
+   If a slot renders nothing, the page hides that band
+   completely — there are no empty boxes and no fallback
+   buttons pointing at an offer.
    =========================================================== */
 
 window.ADS_CONFIG = {
+  /* No grey placeholder boxes and no sponsored-button fallbacks. */
   showPlaceholders: false,
-  lazyLoad: true,
-  anchorEnabled: true
+  sponsorUrl: "",
+  /* Bands start collapsed, so a lazy slot would have no measurable size.
+     Mount on load instead; there are only one or two slots per page. */
+  lazyLoad: false,
+  /* No sticky anchor until there is an anchor zone that fills. */
+  anchorEnabled: false
 };
 
+var MULTITAG_300x250 = `<script>
+(function(noewh){
+var d = document,
+    s = d.createElement('script'),
+    l = d.currentScript || d.scripts[d.scripts.length - 1];
+s.settings = noewh || {};
+s.src = "\\/\\/conventionalresponse.com\\/bLX.VasDdQGMlu0\\/YMW-cQ\\/YeLmp9WuVZ\\/U-lSkFPvTjc\\/2eMwTIYO1BMUD\\/UjtONRz\\/YPxcNbj\\/Upw\\/OAQk";
+s.async = true;
+s.referrerPolicy = 'no-referrer-when-downgrade';
+l.parentNode.insertBefore(s, l);
+})({})
+</script>`;
+
 window.AD_CODES = {
-
-  /* =========================================================
-     728x90 banners
-     ========================================================= */
-
-  "top-banner": `
-    <script>
-      atOptions = {
-        'key' : '108b7b9c4b4ba4a48b1cc80c01c8846c',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/108b7b9c4b4ba4a48b1cc80c01c8846c/invoke.js"></script>
-  `,
-
-  "bottom-banner": `
-    <script>
-      atOptions = {
-        'key' : '108b7b9c4b4ba4a48b1cc80c01c8846c',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/108b7b9c4b4ba4a48b1cc80c01c8846c/invoke.js"></script>
-  `,
-
-  "anchor": `
-    <script>
-      atOptions = {
-        'key' : '108b7b9c4b4ba4a48b1cc80c01c8846c',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/108b7b9c4b4ba4a48b1cc80c01c8846c/invoke.js"></script>
-  `,
-
-  /* =========================================================
-     468x60 banners (center)
-     ========================================================= */
-
-  "center-1": `
-    <script>
-      atOptions = {
-        'key' : '323f1f92767842867de91169792ac12b',
-        'format' : 'iframe',
-        'height' : 60,
-        'width' : 468,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/323f1f92767842867de91169792ac12b/invoke.js"></script>
-  `,
-
-  "center-5": `
-    <script>
-      atOptions = {
-        'key' : '323f1f92767842867de91169792ac12b',
-        'format' : 'iframe',
-        'height' : 60,
-        'width' : 468,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/323f1f92767842867de91169792ac12b/invoke.js"></script>
-  `,
-
-  /* =========================================================
-     300x250 banners — left rail
-     ========================================================= */
-
-  "left-1": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  "left-2": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  "left-3": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  /* =========================================================
-     300x250 banners — center
-     ========================================================= */
-
-  "center-2": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  "center-3": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  /* Native banner (only one instance allowed) */
-  "center-4": `
-    <script async="async" data-cfasync="false" src="https://pl32225311.profitableratecpmnetwork.com/ad440a9f58e4d28f834da09412c224ba/invoke.js"></script>
-    <div id="container-ad440a9f58e4d28f834da09412c224ba"></div>
-  `,
-
-  "center-6": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  "center-7": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  "center-8": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  /* =========================================================
-     300x250 banners — right rail
-     ========================================================= */
-
-  "right-1": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  "right-2": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  "right-3": `
-    <script>
-      atOptions = {
-        'key' : '0aab1b3563f21f24a4a5eb419267d682',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
-    </script>
-    <script src="https://www.highrevenueformat.com/0aab1b3563f21f24a4a5eb419267d682/invoke.js"></script>
-  `,
-
-  /* =========================================================
-     Script-only formats
-     ========================================================= */
-
-  "pop": `
-    <script src="https://pl32225309.profitableratecpmnetwork.com/0e/f4/5b/0ef45b9396bcb6195188561aeb05f6c4.js"></script>
-  `,
-
-  "social-bar": `
-    <script src="https://pl32225310.profitableratecpmnetwork.com/53/61/ac/5361ac3b3f7e3369401d3e1fd8797465.js"></script>
-  `,
-
-  "vignette": ``,
-  "global-scripts": ``
+  "in-article": MULTITAG_300x250,
+  "sidebar": MULTITAG_300x250,
+  "footer": MULTITAG_300x250
 };

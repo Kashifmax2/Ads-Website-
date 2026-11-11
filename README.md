@@ -1,209 +1,101 @@
-# TechSarthi — Ad-Only Page (Adsterra)
+# TechSarthi
 
-A page built only for ads. All Adsterra / Profitableratecpm formats are already installed:
-**728×90, 300×250, 468×60, native banner, popunder, social bar and smartlink.**
+A small technology publication: three tested guides, an about page and a
+privacy policy, with clearly labelled display advertising between the
+articles.
 
-## Two properties in this repo
+Live at **https://webadsforadsads.vercel.app**
 
-| Folder | What it is | Deploy |
-|---|---|---|
-| repo root | The original ad-wall pages (`/` and `/page2`) | existing Vercel project |
-| `cryptocurrency-website/` | **Chainwise**, a separate crypto publication for ad networks | its own Vercel project, Root Directory `cryptocurrency-website` |
+## Pages
 
-Chainwise is a different site, not a page of this one. Its ad codes live in
-`cryptocurrency-website/ads.js`, and its deploy steps are in
-`cryptocurrency-website/README.md`.
-
-## Live layout
-
-```
-top-banner (728x90)
-┌──────────┬──────────────┬──────────┐
-│ left-1   │ center-1 468 │ right-1  │
-│ left-2   │ center-2 300 │ right-2  │
-│ left-3   │ center-3 300 │ right-3  │
-│          │ center-4 nat │          │
-│          │ center-5 468 │          │
-│          │ center-6 300 │          │
-│          │ center-7 300 │          │
-│          │ center-8 300 │          │
-│          │ Smartlink CTA│          │
-└──────────┴──────────────┴──────────┘
-bottom-banner (728x90)
-sticky anchor (728x90)
-```
-
-On screens narrower than 1160px the rails move below the center column, and on phones
-everything becomes a single column.
-
-## Files
-
-| File | Purpose |
+| File | What it is |
 |---|---|
-| `index.html` | Page 1 — ad layout + smartlink CTA |
-| `page2.html` | Page 2 — URL-only page for the second network (ProfitOn) |
-| `page3.html` | Page 3 — URL-only page for the third network (CCNSAD, ready to paste) |
-| `page4.html` | Page 4 — URL-only page for Monetag |
-| `styles.css` | Responsive ad-wall design (shared by all ad pages) |
-| `ads.js` | Page 1 ad codes (Adsterra) |
-| `ads2.js` | Page 2 ad codes (ProfitOn slots + Adsterra defaults) |
-| `ads3.js` | Page 3 ad codes (CCNSAD overrides + Adsterra defaults) |
-| `ads4.js` | Page 4 ad codes (Monetag overrides + Adsterra defaults) |
-| `app.js` | Ad loader, parallel iframes, lazy loading, fitter, anchor |
-| `vercel.json` | `cleanUrls` so `/page2`, `/page3` and `/page4` work without `.html` |
-| `privacy.html` | Privacy policy (not linked, keep for network review) |
+| `index.html` | Home — hero, the three guides, about strip |
+| `fast-charging.html` | Guide: checking whether a phone is fast-charging |
+| `sell-android-phone.html` | Guide: preparing an Android phone for sale |
+| `wifi-drops-evening.html` | Guide: evening Wi-Fi slowdowns |
+| `about.html` | Who writes the desk, how it is tested and funded |
+| `privacy.html` | Privacy and cookies, including ad partners |
+| `styles.css` | The whole design system |
+| `ads.js` | The live ad codes (one 300×250 placement, three slots) |
+| `app.js` | Ad loader: iframe isolation, fill detection, responsive fit |
+| `robots.txt`, `sitemap.xml` | Crawling and discovery |
+| `vercel.json` | Redirects for the old `/page2`–`/page4` ad walls |
 
-## Page 2 (`/page2`)
+## Ads
 
-Page 2 is intentionally **not linked** from page 1 — there is no button, no menu item,
-no footer link. It only opens when the URL is typed:
+Only placements that actually fill are kept.
 
-```
-https://your-project.vercel.app/page2
-```
-
-`vercel.json` enables `cleanUrls`, so `/page2` serves `page2.html`. `/page2.html`
-also works and redirects to `/page2`.
-
-To add the second network's ads, open **`ads2.js`** and paste the snippets into the
-matching `p2-*` keys. Every empty key falls back to a sponsored button instead of a
-dead box.
-
-Current ProfitOn setup on page 2:
-
-| Slot | Format | Code |
+| Slot | Size | Where |
 |---|---|---|
-| `p2-center-4` | Shuffle box (visible in-feed) | ProfitOn `161012` |
-| `p2-pop` | Pops / popunder | ProfitOn `161010` |
-| Top CTA + empty-slot fallback | Smartlink | ProfitOn `161011` |
-| `p2-global` | Extra script slot | empty (for future codes) |
+| `in-article` | 300×250 | Home (below the guides), inside each guide |
+| `sidebar` | 300×250 | Guide rail |
+| `footer` | 300×250 | Home, under the about strip |
 
-`p2-center-4` is marked `data-no-cta`, so the smartlink button never covers the
-third-party widget.
+All three load the same 300×250 MultiTag creative. A fourth placement is
+one line in `ads.js` plus one `.ad` block in the page.
 
-## Page 3 (`/page3`)
+### What was removed, and why
 
-Page 3 is a copy of the page 2 layout with its own slot keys (`p3-*`), its own config
-file (`ads3.js`), and no link from page 1 or page 2:
+The old page was a wall of fourteen boxes. On a normal Chrome user agent
+every Adsterra banner answered `200` and then rendered **0×0** — no
+creative, no impression, no revenue. What filled the boxes instead was a
+fallback "sponsored" button pointing at a ProfitOn smartlink, which
+redirected through random `.cfd` domains and landed on the AdZilla memecoin
+pages. That is the part that put the ad account at risk: an ad-only page
+whose only working unit is a redirect chain.
 
-```
-https://your-project.vercel.app/page3
-```
+Removed for good:
 
-Every visible slot starts with an Adsterra banner, so the page is filled from day one.
+- Adsterra 728×90, 468×60 and 300×250 banners (all empty fills)
+- Adsterra native banner, social bar and popunder
+- The ProfitOn smartlink buttons, including the automatic fallback that
+  covered every empty box
+- `page2.html`, `page3.html`, `page4.html` and `ads2.js`, `ads3.js`,
+  `ads4.js` — three orphan ad walls with no content and no inbound links
 
-To run another network here — CCNSAD, Monetag, a second ProfitOn placement — open
-**`ads3.js`** and paste the code in the `overrides` block:
+`/page2`, `/page3` and `/page4` now 308 to `/` through `vercel.json`, so
+old links keep working without serving an ad-only page.
 
-```js
-var overrides = {
-  "p3-top": '<script async src="https://..."></script>',
-  "p3-pop": '<script async src="https://..."></script>'
-};
-```
+### How a band behaves
 
-A slot listed there replaces the Adsterra banner for that slot only. Slots you leave out
-keep Adsterra. `p3-pop` already runs the ProfitOn popunder (`161010`) as a safety net so
-the page earns on every click before CCNSAD is installed — override it with the CCNSAD
-popunder code when it arrives. `p3-social`, `p3-vignette` and `p3-global` load nothing
-until you give them a code.
+Every `.ad` block starts with `class="ad is-empty"`, which collapses it to
+zero height and hides it. `app.js` mounts the creative, watches the frame
+for about fifteen seconds, and only then removes `is-empty`. If nothing
+fills, the band stays invisible — no grey placeholder, no reserved gap, no
+fallback link.
 
-`ads3.js` is never loaded by page 1 or page 2, so changing it cannot affect them.
+The slot is kept in the layout while hidden (rather than `display:none`) so
+a late fill can still be measured; `height: 0; overflow: hidden;
+visibility: hidden` removes it visually without breaking detection.
 
-## Page 4 (`/page4`)
+## Content rules
 
-Page 4 is the page 2/3 layout with `p4-*` keys and its own config, `ads4.js`. It is built
-for **Monetag**:
+- Guides are written per page, tested on hardware, and dated.
+- No affiliate links in body text, no paid rankings.
+- Ads are labelled "Advertisement" and sit between sections.
+- Nothing asks for an OTP, UPI PIN, bank password or card number.
+- No pop-under, no in-page push, no fake system warnings.
 
-```
-https://your-project.vercel.app/page4
-```
-
-The Monetag verification meta is on every page, and page 4 now runs every zone:
-
-| Zone | Format | Where it is installed |
-|---|---|---|
-| 307882 | Multitag "Crazy tag" — push 12224249, vignette 12224248, in-page push 12224247, OnClick multi 12224246 | `p4-global` |
-| 12224255 | OnClick (Popunder) "Happy tag" | `p4-pop` |
-| 12224273 | Direct Link "Wise tag" | `sponsorUrl` + the top CTA in `page4.html` |
-
-```js
-var overrides = {
-  "p4-pop":    '<script>…data.zone=12224255…<\/script>',
-  "p4-global": '<script src="https://quge5.com/88/tag.min.js" data-zone="307882" async data-cfasync="false"><\/script>'
-};
-```
-
-`p4-social` and `p4-vignette` stay empty on purpose: the multitag already serves push,
-in-page push and vignette, so a second code there would double-count the same impression.
-
-Banner format zones can also be pasted into any visible `p4-*` slot; that replaces the
-Adsterra banner for that slot only. Visible slots start on Adsterra so the page is never
-a wall of empty boxes.
-
-Every page carries all three verification metas:
-
-```html
-<meta name="profiton-domain-verification" content="e95c9ff57c43ef7f27b93172f4b1ba4f611fa2ead5712ec9dd052ca87fd2babe" />
-<meta name="ccnsad-site-verification" content="fa128531eff8c7db" />
-<meta name="monetag" content="f4abe85b2963045eeecfe285f434191b">
-```
-
-## Active slots
-
-| Slot | Format | Code |
-|---|---|---|
-| `top-banner` | 728×90 | Adsterra 728 banner |
-| `bottom-banner` | 728×90 | Adsterra 728 banner |
-| `anchor` | 728×90 sticky | Adsterra 728 banner |
-| `center-1`, `center-5` | 468×60 | Adsterra 468 banner |
-| `left-1..3`, `right-1..3` | 300×250 | Adsterra 300 banner |
-| `center-2`, `center-3`, `center-6..8` | 300×250 | Adsterra 300 banner |
-| `center-4` | Native | Adsterra native banner |
-| `pop` | Popunder | Adsterra popunder |
-| `social-bar` | Social bar | Adsterra social bar |
-| Smartlink | 2 CTA banners in `index.html` (top + center) + every empty-slot fallback | ProfitOn `161011` |
-
-Empty hidden slots: `vignette`, `global-scripts` (ready for future networks).
-
-## How it works
-
-- Every banner runs inside its own `srcdoc` iframe, so all banners load **in parallel**
-  and Adsterra's global `atOptions` can never be overwritten by another banner.
-- Popunder and social bar are mounted first, so click-triggered ads are ready early.
-- Banners below the fold are lazy-mounted (900px margin), which keeps the first paint
-  under ~400ms.
-- Each slot reserves its exact ad height in CSS, so the page never collapses or jumps
-  while the network answers.
-- `fitAdFrames()` scales oversized banners (for example 728×90 on a phone) to fit the
-  screen, keeping every banner fully visible.
-- Placeholders are off (`showPlaceholders: false`); the faint "Advertisement" layer is
-  only visible if an ad is blocked.
-- **No dead boxes:** after ~4s, if a slot still has no creative inside, that box turns
-  into a real clickable sponsored ad button (smartlink). If the ad fills later, the
-  button is removed automatically so a live ad is never covered.
-- Every fallback button points at the ProfitOn smartlink `161011`
-  (`sb.inveilfunds.com/...`). Do **not** put a rotating smartlink here that can land on
-  low-quality crypto offers — page 1 once used `profitableratecpmnetwork.com/ikcvyxdfz`,
-  which started serving the "AdZilla" memecoin page on every click. Pages 2–4 set their
-  own `sponsorUrl`, so this default only affects page 1.
-
-## Deploy to GitHub + Vercel
+## Deploying
 
 ```bash
 git add .
-git commit -m "Adsterra formats installed"
+git commit -m "Describe the change"
 git push
 ```
 
-Vercel → **Add New Project** → import `Ads-Website-` → Framework: **Other** →
-leave build command and output directory empty → **Deploy**.
+Vercel deploys the repository root automatically. There is no build step
+and no dependency to install.
 
-## Notes
+## Adding a network
 
-- Popunder / social bar behaviour (frequency, click trigger) is controlled by Adsterra,
-  not by this page. There is no forced or hidden click layer.
-- An ad-only page is not eligible for AdSense. Adsterra, Monetag and PropellerAds accept it.
-- If one banner key is reused in several slots, Adsterra may show the same creative in
-  those places. Create extra banner zones in your Adsterra dashboard if you want more variety.
-- `index.html` uses `noindex, nofollow`; remove that meta tag if you want search traffic.
+1. Create the zone at 300×250 (or the size you need).
+2. Paste the snippet into `ads.js` under a new key.
+3. Add a matching `.ad` block with `data-slot="<key>"`.
+4. Keep `data-size="rectangle"` so the loader reserves the right box.
+5. Deploy and scroll the page on a phone and a desktop: the band should
+   appear only when the network actually returns a creative.
+
+The verification metas for ProfitOn, CCNSAD and Monetag are on every page
+and are harmless to keep even for networks that are not currently in use.

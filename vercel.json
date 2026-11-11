@@ -1,3 +1,11 @@
 {
-  "cleanUrls": true
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/page2", "destination": "/", "permanent": true },
+    { "source": "/page2.html", "destination": "/", "permanent": true },
+    { "source": "/page3", "destination": "/", "permanent": true },
+    { "source": "/page3.html", "destination": "/", "permanent": true },
+    { "source": "/page4", "destination": "/", "permanent": true },
+    { "source": "/page4.html", "destination": "/", "permanent": true }
+  ]
 }
